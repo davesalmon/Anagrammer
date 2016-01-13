@@ -18,6 +18,7 @@
 		0B5F7D9D1C3C7A4D00010B59 /* Permutation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0B5F7D9B1C3C7A4D00010B59 /* Permutation.cpp */; };
 		0B5F7DA01C3C7C2800010B59 /* PermutationList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0B5F7D9E1C3C7C2800010B59 /* PermutationList.cpp */; };
 		0B9A1E131C4593910032F0F7 /* Responder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0B9A1E111C4593910032F0F7 /* Responder.cpp */; };
+		0BDA4A691C46B70000786D7D /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 0BDA4A681C46B70000786D7D /* README.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,6 +53,7 @@
 		0B5F7D9F1C3C7C2800010B59 /* PermutationList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PermutationList.h; sourceTree = "<group>"; };
 		0B9A1E111C4593910032F0F7 /* Responder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Responder.cpp; sourceTree = "<group>"; };
 		0B9A1E121C4593910032F0F7 /* Responder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Responder.h; sourceTree = "<group>"; };
+		0BDA4A681C46B70000786D7D /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,6 +78,7 @@
 		0B1C01781C37295500E324DF = {
 			isa = PBXGroup;
 			children = (
+				0BDA4A681C46B70000786D7D /* README.md */,
 				0B41771F1C39CB4400E66475 /* Cocoa.framework */,
 				0B1C01831C37295500E324DF /* Anagrammer */,
 				0B1C01971C37295500E324DF /* AnagrammerTests */,
@@ -245,6 +248,7 @@
 				0B5F7D9A1C3B133400010B59 /* StringMatch.cpp in Sources */,
 				0B9A1E131C4593910032F0F7 /* Responder.cpp in Sources */,
 				0B5F7D9D1C3C7A4D00010B59 /* Permutation.cpp in Sources */,
+				0BDA4A691C46B70000786D7D /* README.md in Sources */,
 				0B1C01881C37295500E324DF /* AnagramDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
