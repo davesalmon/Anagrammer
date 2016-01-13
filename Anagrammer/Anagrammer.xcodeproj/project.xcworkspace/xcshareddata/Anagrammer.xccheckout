@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>CF3D1E18-ECD2-4E6C-B1B7-8F32B99127D6</string>
+	<key>IDESourceControlProjectName</key>
+	<string>Anagrammer</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>B659FD2D187E96A6611A8DF283EDDC8E73BCDCFD</key>
+		<string>https://github.com/davesalmon/Anagrammer.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>Anagrammer/Anagrammer.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>B659FD2D187E96A6611A8DF283EDDC8E73BCDCFD</key>
+		<string>../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/davesalmon/Anagrammer.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>B659FD2D187E96A6611A8DF283EDDC8E73BCDCFD</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>B659FD2D187E96A6611A8DF283EDDC8E73BCDCFD</string>
+			<key>IDESourceControlWCCName</key>
+			<string>Anagrammer</string>
+		</dict>
+	</array>
+</dict>
+</plist>
