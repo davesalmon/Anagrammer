@@ -14,11 +14,11 @@
 		<string>https://github.com/davesalmon/Anagrammer.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>Anagrammer/Anagrammer.xcodeproj</string>
+	<string>Anagrammer.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>B659FD2D187E96A6611A8DF283EDDC8E73BCDCFD</key>
-		<string>../../..</string>
+		<string>../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://github.com/davesalmon/Anagrammer.git</string>
