@@ -672,7 +672,7 @@
                 </menuItem>
             </items>
         </menu>
-        <window title="Anagrammer" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="QvC-M9-y7g">
+        <window title="Anagrammer" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" frameAutosaveName="anagramwindow" animationBehavior="default" id="QvC-M9-y7g">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="335" y="390" width="480" height="360"/>
@@ -791,7 +791,7 @@
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                         <connections>
-                            <binding destination="Voe-Tx-rLC" name="value" keyPath="wordListLocation" id="f3v-fb-wnc"/>
+                            <binding destination="9co-dQ-eQy" name="value" keyPath="values.wordListLocation" id="Uxp-aw-uSk"/>
                         </connections>
                     </textField>
                     <button verticalHuggingPriority="750" id="cRu-yV-Z4e">
@@ -851,6 +851,17 @@
                             <binding destination="Voe-Tx-rLC" name="value" keyPath="message" id="6Jp-rl-wnZ"/>
                         </connections>
                     </textField>
+                    <button verticalHuggingPriority="750" id="qZt-GU-Lql">
+                        <rect key="frame" x="404" y="259" width="56" height="17"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="roundRect" title="change" bezelStyle="roundedRect" alignment="center" controlSize="small" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="UEM-nV-38S">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="smallSystem"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="updateWordList:" target="Voe-Tx-rLC" id="RS9-fW-sjI"/>
+                        </connections>
+                    </button>
                 </subviews>
             </view>
         </window>

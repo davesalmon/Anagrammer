@@ -51,8 +51,6 @@
 
 @property (copy) NSString* message;
 
-@property NSString* 					wordListLocation;
-
 - (void) setInputString: (NSString*) s;
 - (NSString*) getInputString;
 
@@ -63,6 +61,9 @@
 - (NSString*) getWordLengths;
 
 - (IBAction)findAnagrams:(id)sender;	// the button was pressed
+
+// update the word list.
+- (IBAction) updateWordList: (id) sender;
 
 @end
 
@@ -123,6 +124,11 @@ makeString(const std::vector<size_t>& list)
 	return [NSString stringWithCString: s.c_str() encoding: NSUTF8StringEncoding];
 }
 
+NSString* kDefaultWordList = @"/usr/share/dict/words";
+NSString* kWordListKey = @"wordListLocation";
+NSString* kDefaultDir = @"/usr/share/dict";
+NSString* kkDefaultDirKey = @"NSNavLastRootDirectory";
+
 @implementation AnagramDelegate
 
 //----------------------------------------------------------------------------------------
@@ -136,17 +142,51 @@ makeString(const std::vector<size_t>& list)
 //----------------------------------------------------------------------------------------
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
 	// Insert code here to initialize your application
+	// Register default values
+	NSDictionary *userDefaultsValuesDict = [NSDictionary dictionaryWithObjectsAndKeys:
+											kDefaultWordList, kWordListKey,
+											kDefaultDir, kkDefaultDirKey,
+											nil];
+	[[NSUserDefaults standardUserDefaults] registerDefaults: userDefaultsValuesDict];
+	
+	// prepare the location of the word list
+	NSString* listLoc = [[NSUserDefaults standardUserDefaults] stringForKey: kWordListKey];
+	
+	// make sure the file exists.
+	BOOL validList = NO;
+	if (listLoc != nil && [listLoc length] > 0) {
+		BOOL dir = NO;
+		validList = [[NSFileManager defaultManager] fileExistsAtPath: listLoc isDirectory: &dir];
+	}
+	
+	if (!validList) {
+		// write the default into the
+		[[NSUserDefaults standardUserDefaults] setObject: kDefaultWordList forKey: kWordListKey];
+		listLoc = kDefaultWordList;
+	}
+
+	NSLog(@"anagram word list is %@", [[NSUserDefaults standardUserDefaults] stringForKey: kWordListKey]);
+	
+	// init the lengths vector.
 	lengths = new std::vector<size_t> ();
-	matcher = new WordMatch("/usr/share/dict/words");
+	
+	// and construct a matcher for the word list.
+	matcher = new WordMatch([listLoc cStringUsingEncoding: NSUTF8StringEncoding]);
 	matcher->setResponder(Responder(self));
 	
-	self.wordListLocation = @"/usr/share/dict/words";
+	if (!matcher->valid()) {
+		self.message = @"No valid words in selected word list.";
+	} else {
+		self.message = [NSString stringWithFormat:@"Loaded %lu words for anagram matching",
+						matcher->wordCount()];
+	}
+	
+//	self.wordListLocation = @"/usr/share/dict/words";
 	self.wordCount = 1;
-	self.message = @"";
 	finding = false;
 	
 	_findButton.enabled = NO;
-
+	
 }
 
 //----------------------------------------------------------------------------------------
@@ -214,7 +254,7 @@ makeString(const std::vector<size_t>& list)
 		[self setWordLengths: makeString(*lengths)];
 	}
 	
-	_findButton.enabled = [inputString length] > 0;
+	_findButton.enabled = matcher->valid() && [inputString length] > 0;
 }
 
 //----------------------------------------------------------------------------------------
@@ -507,6 +547,56 @@ makeString(const std::vector<size_t>& list)
 		}
 	}
 }
+
+//----------------------------------------------------------------------------------------
+//  updateWordList:
+//
+//      the update word list button.
+//
+//  updateWordList: id sender    ->
+//
+//  returns nothing
+//----------------------------------------------------------------------------------------
+- (IBAction) updateWordList: (id) sender
+{
+	NSLog(@"In update word list");
+	
+	NSOpenPanel* panel = [NSOpenPanel openPanel];
+	[panel setCanChooseDirectories: NO];
+	[panel setAllowsMultipleSelection: NO];
+	[panel setResolvesAliases:NO];
+	
+	// This method displays the panel and returns immediately.
+	// The completion handler is called when the user selects an
+	// item or cancels the panel.
+	[panel beginWithCompletionHandler:^(NSInteger result){
+		if (result == NSFileHandlingPanelOKButton) {
+			NSURL*  theDoc = [[panel URLs] objectAtIndex:0];
+			
+			// Open  the document.
+			const char* file = [theDoc fileSystemRepresentation];
+			
+			WordMatch* test = new WordMatch(file);
+			
+			if (test->valid()) {
+			
+				NSString* path = [NSString stringWithCString:file encoding:NSUTF8StringEncoding];
+			
+				[[NSUserDefaults standardUserDefaults] setObject: path forKey: kWordListKey];
+
+				delete matcher;
+				matcher = test;
+				
+				self.message = [NSString stringWithFormat:@"Loaded %lu words for anagram matching",
+								matcher->wordCount()];
+
+			} else {
+				NSBeep();
+				self.message = @"That file does not appear to be a valid word list.";
+			}
+		}
+		
+	}];}
 
 //----------------------------------------------------------------------------------------
 //  findAnagrams:

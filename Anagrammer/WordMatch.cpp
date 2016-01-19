@@ -89,6 +89,17 @@ WordMatch::matchWord(const std::string& word) const
 	return StringMatch::kEmpty;
 }
 
+size_t
+WordMatch::wordCount() const
+{
+	size_t sum = 0;
+	for (const auto & l : words) {
+		sum += l.size();
+	}
+	
+	return sum;
+}
+
 //----------------------------------------------------------------------------------------
 //  WordMatch::matchWords
 //

@@ -45,6 +45,8 @@ public:
 	
 	size_t getWordSize() const { return wordSize; }
 	
+	size_t size() const { return map.size(); }
+	
 private:
 	
 	// map the sorted word into the list if matching words

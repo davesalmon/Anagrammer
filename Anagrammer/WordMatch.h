@@ -41,8 +41,13 @@ public:
 	
 	void matchWords(const std::string& word, const std::vector<size_t>& lengths, bool & bail) const;
 	
+	bool valid() const { return words.size() > 1; }
+	
 	size_t maxWordLength() const
 				{ return words.back().getWordSize(); }
+	
+	// return the total number of words in the pool
+	size_t wordCount() const;
 	
 	void setResponder(const Responder& r) { resp = r; }
 	
