@@ -586,6 +586,7 @@ NSString* kkDefaultDirKey = @"NSNavLastRootDirectory";
 
 				delete matcher;
 				matcher = test;
+				matcher->setResponder(Responder(self));
 				
 				self.message = [NSString stringWithFormat:@"Loaded %lu words for anagram matching",
 								matcher->wordCount()];
