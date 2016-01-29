@@ -89,6 +89,13 @@ WordMatch::matchWord(const std::string& word) const
 	return StringMatch::kEmpty;
 }
 
+//----------------------------------------------------------------------------------------
+//  WordMatch::wordCount
+//
+//      return the number of words.
+//
+//  returns size_t <- 
+//----------------------------------------------------------------------------------------
 size_t
 WordMatch::wordCount() const
 {
@@ -98,6 +105,40 @@ WordMatch::wordCount() const
 	}
 	
 	return sum;
+}
+
+// return the insert position for part.
+//----------------------------------------------------------------------------------------
+//  findInsertLocation                                                             static
+//
+//      return the insert location into dest of part to appends words in lexical order.
+//
+//  const std::string& dest -> the destination for part.
+//  const std::string& part -> the part to insert.
+//
+//  returns std::size_t    <- the insert location for part to maintain word order.
+//----------------------------------------------------------------------------------------
+static std::size_t
+findInsertLocation(const std::string& dest, const std::string& part)
+{
+	std::size_t pos = 0;
+	std::size_t destlen = dest.length();
+	
+	while(pos < destlen) {
+	
+		if (dest.compare(pos, destlen - pos, part) >= 0) {
+			return pos;
+		}
+		
+		// move to the next space
+		while (pos < dest.length() && dest[pos] != ' ')
+			pos++;
+		
+		// and first char after space.
+		pos++;
+	}
+	
+	return destlen;
 }
 
 //----------------------------------------------------------------------------------------
@@ -146,8 +187,6 @@ WordMatch::matchWords(const std::string& input, const std::vector<size_t>& lengt
 	std::transform(word.begin(), word.end(), word.begin(), ::tolower);
 	std::sort(word.begin(), word.end());
 
-//	fprintf(stderr, "word is %s\n", word.c_str());
-
 	std::map<std::string, const StringArray*> cache;
 	
 	// loop over the permutations of the characters in the input string (word).
@@ -168,30 +207,12 @@ WordMatch::matchWords(const std::string& input, const std::vector<size_t>& lengt
 			// see if we already have a list.
 			auto it = cache.find(part);
 			
-//			if (part == "gnorst" && it != cache.end()) {
-//				if (it->second->size() != 1) {
-//					fprintf(stderr, "found %ld elements\n", it->second->size());
-//					assert(it->second->size() == 1);
-//				}
-//			}
-			
+			// if not match that part to our word list.
 			const StringArray* m = it != cache.end() ? it->second : &matchWord(part);
 			
-//			const StringArray& m = it != cache.end() ? it->second : matchWord(part);
-			
 			if (it == cache.end()) {
-				
-//				fprintf(stderr, "adding %s to cache with %ld elements\n",
-//						part.c_str(), m->size());
-				
 				cache.emplace(std::make_pair(part, m));
-				
-//				fprintf(stderr, "element in cache has %ld elements\n", cache[part]->size());
-
 			}
-
-			// match that part to our word list.
-			//const StringArray& m = matchWord(cpy);
 
 			// no matches for any given part and we are done.
 			if (bail || m->size() == 0) {
@@ -215,9 +236,22 @@ WordMatch::matchWords(const std::string& input, const std::vector<size_t>& lengt
 			do {
 				std::string s;
 				for (auto i = 0; i < matches.size(); i++) {
-					if (i != 0)
+
+					std::string part((*matches[i])[l.index(i)]);
+					
+					// assemble the words in order. This allows us to
+					// remove a lot of duplicates in the case of multiple word matches.
+					std::size_t pos = findInsertLocation(s, part);
+					
+					if (pos > 0) {
 						s += ' ';
-					s.append((*matches[i])[l.index(i)]);
+						pos++;
+					} else {
+						if (s.length() != 0) {
+							part += ' ';
+						}
+					}
+					s.insert(pos, part);
 				}
 				
 				const auto & it = std::lower_bound(outMatches.begin(), outMatches.end(), s);
@@ -233,8 +267,6 @@ WordMatch::matchWords(const std::string& input, const std::vector<size_t>& lengt
 	while(!bail && std::next_permutation(word.begin(), word.end()));
 
 	fprintf(stderr, "match done\n");
-	
-//	return outMatches;
 }
 
 //----------------------------------------------------------------------------------------
