@@ -107,38 +107,62 @@ WordMatch::wordCount() const
 	return sum;
 }
 
-// return the insert position for part.
 //----------------------------------------------------------------------------------------
-//  findInsertLocation                                                             static
+//	class for comparing strings before combining matches.
 //
-//      return the insert location into dest of part to appends words in lexical order.
+//	first we sort by word length in the input length list, and then by word contents.
 //
-//  const std::string& dest -> the destination for part.
-//  const std::string& part -> the part to insert.
-//
-//  returns std::size_t    <- the insert location for part to maintain word order.
-//----------------------------------------------------------------------------------------
-static std::size_t
-findInsertLocation(const std::string& dest, const std::string& part)
+class WordLess
 {
-	std::size_t pos = 0;
-	std::size_t destlen = dest.length();
+public:
+
+	WordLess(const std::vector<size_t>& lengths);
 	
-	while(pos < destlen) {
+	bool operator() (const std::string& s1, const std::string& s2) const;
+private:
 	
-		if (dest.compare(pos, destlen - pos, part) >= 0) {
-			return pos;
-		}
+	const std::vector<size_t>& l;
+};
+
+//----------------------------------------------------------------------------------------
+//  WordLess::WordLess                                                 constructor inline
+//
+//      construct word compare object with list of output lengths.
+//
+//  const std::vector<size_t>& lengths -> the list of output word lengths.
+//
+//  returns nothing
+//----------------------------------------------------------------------------------------
+inline
+WordLess::WordLess(const std::vector<size_t>& lengths) : l(lengths)
+{
+}
+
+//----------------------------------------------------------------------------------------
+//  WordLess::operator()                                                           inline
+//
+//      perform word comparison. First we sort by order of word lengths in the ouput list.
+//		then by lexical order for words of matching lenght.
+//
+//  const std::string& s1  -> the first word.
+//  const std::string& s2  -> the second word.
+//
+//  returns bool   <- true if the first is less than the second.
+//----------------------------------------------------------------------------------------
+inline
+bool
+WordLess::operator() (const std::string& s1, const std::string& s2) const {
+	auto l1 = s1.length();
+	auto l2 = s2.length();
+	
+	if (l1 != l2) {
+		auto ofs1 = std::find(l.begin(), l.end(), l1) - l.begin();
+		auto ofs2 = std::find(l.begin(), l.end(), l2) - l.begin();
 		
-		// move to the next space
-		while (pos < dest.length() && dest[pos] != ' ')
-			pos++;
-		
-		// and first char after space.
-		pos++;
+		return ofs1 < ofs2;
+	} else {
+		return s1 < s2;
 	}
-	
-	return destlen;
 }
 
 //----------------------------------------------------------------------------------------
@@ -154,7 +178,8 @@ findInsertLocation(const std::string& dest, const std::string& part)
 //  returns StringArray    <- the result array.
 //----------------------------------------------------------------------------------------
 void
-WordMatch::matchWords(const std::string& input, const std::vector<size_t>& lengths, bool & bail) const
+WordMatch::matchWords(const std::string& input, const std::vector<size_t>& lengths,
+					  bool& bail) const
 {
 	// only one word, just call the one word method
 	if (lengths.size() <= 1) {
@@ -235,23 +260,21 @@ WordMatch::matchWords(const std::string& input, const std::vector<size_t>& lengt
 			
 			do {
 				std::string s;
+				std::vector<std::string> wds;
+				
+				// build the vector.
 				for (auto i = 0; i < matches.size(); i++) {
+					wds.push_back((*matches[i])[l.index(i)]);
+				}
 
-					std::string part((*matches[i])[l.index(i)]);
-					
-					// assemble the words in order. This allows us to
-					// remove a lot of duplicates in the case of multiple word matches.
-					std::size_t pos = findInsertLocation(s, part);
-					
-					if (pos > 0) {
+				// and sort it, first by word length, then by value.
+				std::sort(wds.begin(), wds.end(), WordLess(lengths));
+				
+				for (const auto& add : wds) {
+					if (s.length() != 0) {
 						s += ' ';
-						pos++;
-					} else {
-						if (s.length() != 0) {
-							part += ' ';
-						}
 					}
-					s.insert(pos, part);
+					s.append(add);
 				}
 				
 				const auto & it = std::lower_bound(outMatches.begin(), outMatches.end(), s);
