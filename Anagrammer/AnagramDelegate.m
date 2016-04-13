@@ -187,6 +187,7 @@ NSString* kkDefaultDirKey = @"NSNavLastRootDirectory";
 	
 	_findButton.enabled = NO;
 	
+	outputStrings = [NSMutableArray array];
 }
 
 //----------------------------------------------------------------------------------------
@@ -215,7 +216,9 @@ NSString* kkDefaultDirKey = @"NSNavLastRootDirectory";
 //----------------------------------------------------------------------------------------
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView
 {
-	return [outputStrings count];
+	@synchronized(outputStrings) {
+		return [outputStrings count];
+	}
 }
 
 //----------------------------------------------------------------------------------------
@@ -231,7 +234,11 @@ NSString* kkDefaultDirKey = @"NSNavLastRootDirectory";
 //----------------------------------------------------------------------------------------
 - (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
 {
-	return [outputStrings objectAtIndex: row];
+	@synchronized(outputStrings) {
+		if (row < [outputStrings count])
+			return [outputStrings objectAtIndex: row];
+		return nil;
+	}
 }
 
 //----------------------------------------------------------------------------------------
@@ -470,25 +477,32 @@ NSString* kkDefaultDirKey = @"NSNavLastRootDirectory";
 //----------------------------------------------------------------------------------------
 - (void) addResults: (NSString*) results
 {
-	if (outputStrings == nil) {
-		outputStrings = [NSMutableArray array];
-	}
+	NSInteger count = 0;
 	
 	if (results) {
 		
-		NSUInteger loc = [outputStrings indexOfObject: results
-										inSortedRange: NSMakeRange(0, [outputStrings count])
-											  options: NSBinarySearchingInsertionIndex
-									  usingComparator: ^(id obj1, id obj2)
-						  {
-							  return [obj1 compare:obj2];
-						  }];
+		@synchronized(outputStrings) {
 		
-		[outputStrings insertObject: results atIndex: loc];
+			NSUInteger loc = [outputStrings indexOfObject: results
+											inSortedRange: NSMakeRange(0, [outputStrings count])
+												  options: NSBinarySearchingInsertionIndex
+										  usingComparator: ^(id obj1, id obj2)
+							  {
+								  return [obj1 compare:obj2];
+							  }];
+			
+			[outputStrings insertObject: results atIndex: loc];
+			
+			count = [outputStrings count];
+		}
 	}
 	
 	[_outputTable noteNumberOfRowsChanged];
-	self.message = [NSString stringWithFormat: @"%ld anagrams found", [outputStrings count]];
+	
+	if (count == 0)
+		count = [outputStrings count];
+	
+	self.message = [NSString stringWithFormat: @"%ld anagrams found", count];
 }
 
 //----------------------------------------------------------------------------------------
@@ -506,7 +520,9 @@ NSString* kkDefaultDirKey = @"NSNavLastRootDirectory";
 		
 		NSLog(@"started anagram thread");
 
-		[outputStrings removeAllObjects];
+		@synchronized(outputStrings) {
+			[outputStrings removeAllObjects];
+		}
 		
 		// initialize results
 		[self performSelectorOnMainThread: @selector(addResults:)
